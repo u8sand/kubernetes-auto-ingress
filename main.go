@@ -72,7 +72,7 @@ func main() {
     //create a watch to listen for create/update/delete event on service
     //new created service will be auto-ingressed if it specifies label "autoingress: true"
     //deleted service will be remove the associated ingress if it specifies label "autoingress: true"
-    watchlist := cache.NewListWatchFromClient(clientset.Core().RESTClient(), "services", "",
+    watchlist := cache.NewListWatchFromClient(clientset.CoreV1().RESTClient(), "services", "",
         fields.Everything())
     _, controller := cache.NewInformer(
         watchlist,
@@ -102,7 +102,7 @@ func main() {
                 svc := obj.(*core.Service)
                 log.Info("Service deleted: ", svc.Name)
 				if ing, found := svcIngPair[svc.Name]; found {
-					clientset.Extensions().Ingresses(svc.Namespace).Delete(ing.Name, nil)
+					clientset.ExtensionsV1beta1().Ingresses(svc.Namespace).Delete(ing.Name, nil)
 					log.Info("Deleted ingress for service: ", svc.Name)
                     delete(svcIngPair, svc.Name)
                     log.Info("Updated map: ", reflect.ValueOf(svcIngPair).MapKeys())
