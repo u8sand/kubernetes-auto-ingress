@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: kubernetes-auto-ingress
-        image: hxquangnhat/kubernetes-auto-ingress
+        image: maayanlab/kubernetes-auto-ingress:v0.1.0
         env:
         - name: "AUTO_INGRESS_SECRET"
           value: "secret"
