@@ -19,5 +19,5 @@ spec:
         - name: "AUTO_INGRESS_SECRET"
           value: "secret"
         - name: "AUTO_INGRESS_SERVER_NAME"
-          value: "example.com"
+          value: "maayanlab.net"
         imagePullPolicy: Always

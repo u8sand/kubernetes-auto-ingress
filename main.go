@@ -84,8 +84,8 @@ func main() {
                 log.Info("Service added: ", svc.Name)
                 lb := svc.Labels
                 if _, found1 := svcIngPair[svc.Name]; !found1 {
-                    if val, found2 := lb["auto-ingress/enabled"]; found2 {
-                        if val == "enabled" {
+                    if val, found2 := lb["public"]; found2 {
+                        if val == "true" {
                             newIng, err := createIngressForService(clientset, *svc)
                             if err != nil {
                                 log.Errorln(err.Error())
@@ -113,13 +113,13 @@ func main() {
                 log.Info("Service changed: ", newSvc.Name)
                 lb := newSvc.Labels
                 if ing, found1 := svcIngPair[newSvc.Name]; found1 {
-                    if val, found2 := lb["auto-ingress/enabled"]; !found2 {
+                    if val, found2 := lb["public"]; !found2 {
                         clientset.ExtensionsV1beta1().Ingresses(newSvc.Namespace).Delete(ing.Name, nil)
                         log.Info("Deleted ingress for service: ", newSvc.Name)
                         delete(svcIngPair, newSvc.Name)
                         log.Info("Updated map: ", reflect.ValueOf(svcIngPair).MapKeys())
                     } else {
-                        if val == "disabled" {
+                        if val == "false" {
                             clientset.ExtensionsV1beta1().Ingresses(newSvc.Namespace).Delete(ing.Name, nil)
                             log.Info("Deleted ingress for service: ", newSvc.Name)
                             delete(svcIngPair, newSvc.Name)
@@ -127,8 +127,8 @@ func main() {
                         }
                     }
                 } else {
-                    if val, found3 := lb["auto-ingress/enabled"]; found3 {
-                        if val == "enabled" {
+                    if val, found3 := lb["public"]; found3 {
+                        if val == "true" {
                             newIng, err := createIngressForService(clientset, *newSvc)
                             if err != nil {
                                 log.Errorln(err.Error())
@@ -166,7 +166,7 @@ func createIngressServiceMap(clientset *kubernetes.Clientset, m map[string]exten
         return err
     }
 
-	//get all services which have "auto-ingress/enabled" labels and their associated ingresses
+	//get all services which have "public" labels and their associated ingresses
     for i:=0; i < len(ingresses.Items); i++ {
         rules := ingresses.Items[i].Spec.Rules
         for j:=0; j < len(rules); j++ {
@@ -180,13 +180,13 @@ func createIngressServiceMap(clientset *kubernetes.Clientset, m map[string]exten
         }
     }
 
-	//if there is any services with the label "auto-ingress/enabled" but haven't had the ingresses, create them.
+	//if there is any services with the label "public" but haven't had the ingresses, create them.
 	for i:=0; i < len(services.Items); i++ {
 		lb := services.Items[i].GetLabels()
 		svcName := services.Items[i].GetName()
         if _, found1 := m[svcName]; !found1 {
-            if val, found2 := lb["auto-ingress/enabled"]; found2 {
-                if val == "enabled" {
+            if val, found2 := lb["public"]; found2 {
+                if val == "true" {
                     newIng, err := createIngressForService(clientset, services.Items[i])
                     if err != nil {
                         return err
@@ -195,8 +195,8 @@ func createIngressServiceMap(clientset *kubernetes.Clientset, m map[string]exten
                 }
             }
         } else {
-			if val, found2 := lb["auto-ingress/enabled"]; found2 {
-				if val == "disabled" {
+			if val, found2 := lb["public"]; found2 {
+				if val == "false" {
 					delete(m, svcName)
 				}
 			} else {
