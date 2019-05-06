@@ -244,7 +244,7 @@ func createIngressBackend(service core.Service) extensions.IngressBackend {
 func createIngress(service core.Service, backend extensions.IngressBackend) *extensions.Ingress {
 
 	ingressname := service.Name
-	servername := ingressname + "." + wildcardRecord
+	servername := wildcardRecord
 
 	return &extensions.Ingress{
 		ObjectMeta: metav1.ObjectMeta{
@@ -267,7 +267,7 @@ func createIngress(service core.Service, backend extensions.IngressBackend) *ext
 						HTTP: &extensions.HTTPIngressRuleValue{
 							Paths: []extensions.HTTPIngressPath{
 								{
-									Path:    "/",
+									Path:    "/" + ingressname,
 									Backend: backend,
 								},
 							},
