@@ -19,5 +19,5 @@ spec:
         - name: "AUTO_INGRESS_SECRET"
           value: "secret"
         - name: "AUTO_INGRESS_SERVER_NAME"
-          value: "maayanlab.net"
+          value: "amp.pharm.mssm.edu"
         imagePullPolicy: Always
